@@ -25,8 +25,12 @@ import { ImSpinner2 } from 'react-icons/im';
 import { toast } from 'sonner';
 import { Textarea } from './ui/textarea';
 import { CreateForm } from '@/actions/form';
+import { BsFileEarmarkPlus } from 'react-icons/bs';
+import { useRouter } from 'next/navigation';
+import { Input } from './ui/input';
 
 function CreateFormBtn() {
+  const router = useRouter();
   const form = useForm<formSchemaType>({
     resolver: zodResolver(formSchema),
   });
@@ -35,7 +39,7 @@ function CreateFormBtn() {
     try {
       const formId = await CreateForm(values);
       toast.success('Form created successfully');
-      console.log('FORM ID', formId);
+      router.push(`/builder/${formId}`);
     } catch (error) {
       toast.error('Something went wrong, please try again later.');
     }
@@ -44,7 +48,15 @@ function CreateFormBtn() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Create new form</Button>
+        <Button
+          variant={'outline'}
+          className='group border border-primary/20 h-[190px] items-center justify-center flex flex-col hover:border-primary hover:cursor-pointer border-dashed gap-4 bg-background'
+        >
+          <BsFileEarmarkPlus className='h-8 w-8 text-muted-foreground group-hover:text-primary' />
+          <p className='font-bold text-xl text-muted-foreground group-hover:text-primary'>
+            Create new form
+          </p>
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -64,6 +76,19 @@ function CreateFormBtn() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='description'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
                       rows={5}

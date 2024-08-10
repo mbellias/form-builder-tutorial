@@ -2,6 +2,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { Toaster } from 'sonner';
 import './globals.css';
+import DesignerContextProvider from '@/components/context/DesignerContext';
 
 export default function RootLayout({
   children,
@@ -15,15 +16,17 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <body>
-          <ThemeProvider
-            attribute='class'
-            defaultTheme='system'
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-            <Toaster />
-          </ThemeProvider>
+          <DesignerContextProvider>
+            <ThemeProvider
+              attribute='class'
+              defaultTheme='system'
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+              <Toaster />
+            </ThemeProvider>
+          </DesignerContextProvider>
         </body>
       </html>
     </ClerkProvider>

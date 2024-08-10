@@ -56,3 +56,26 @@ export async function CreateForm(data: formSchemaType) {
 
   return form.id;
 }
+
+export async function GetForms() {
+  const { userId, redirectToSignIn } = auth();
+
+  if (!userId) redirectToSignIn();
+
+  return await prisma.form.findMany({
+    where: { userId: userId as string },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+}
+
+export async function GetFormById(id: number) {
+  const { userId, redirectToSignIn } = auth();
+
+  if (!userId) redirectToSignIn();
+
+  return await prisma.form.findUnique({
+    where: { userId: userId as string, id },
+  });
+}
