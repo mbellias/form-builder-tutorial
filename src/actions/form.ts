@@ -79,3 +79,35 @@ export async function GetFormById(id: number) {
     where: { userId: userId as string, id },
   });
 }
+
+export async function UpdateFormContent(id: number, jsonContent: string) {
+  const { userId, redirectToSignIn } = auth();
+
+  if (!userId) redirectToSignIn();
+
+  return await prisma.form.update({
+    where: {
+      userId: userId as string,
+      id,
+    },
+    data: {
+      content: jsonContent,
+    },
+  });
+}
+
+export async function PublishForm(id: number) {
+  const { userId, redirectToSignIn } = auth();
+
+  if (!userId) redirectToSignIn();
+
+  return await prisma.form.update({
+    where: {
+      userId: userId as string,
+      id,
+    },
+    data: {
+      published: true,
+    },
+  });
+}
