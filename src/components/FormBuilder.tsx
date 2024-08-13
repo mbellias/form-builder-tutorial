@@ -1,4 +1,5 @@
 'use client';
+
 import { Form } from '@prisma/client';
 import React, { useEffect, useState } from 'react';
 import PreviewDialogBtn from './PreviewDialogBtn';
@@ -18,9 +19,12 @@ import { ImSpinner2 } from 'react-icons/im';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
+import Link from 'next/link';
+import { BsArrowLeft, BsArrowRight } from 'react-icons/bs';
+import Confetti from 'react-confetti';
 
 function FormBuilder({ form }: { form: Form }) {
-  const { setElements } = useDesigner();
+  const { setElements, setSelectedElement } = useDesigner();
   const [isReady, setIsReady] = useState(false);
   const mouseSensor = useSensor(MouseSensor, {
     activationConstraint: {
@@ -41,9 +45,10 @@ function FormBuilder({ form }: { form: Form }) {
     if (isReady) return;
     const elements = JSON.parse(form.content);
     setElements(elements);
+    setSelectedElement(null);
     const readyTimeout = setTimeout(() => setIsReady(true), 500);
     return () => clearTimeout(readyTimeout);
-  }, [form, setElements]);
+  }, [form, setElements, isReady, setSelectedElement]);
 
   if (!isReady) {
     <div className='flex flex-col items-center justify-center w-full h-[80vh]'>
@@ -51,12 +56,22 @@ function FormBuilder({ form }: { form: Form }) {
     </div>;
   }
 
-  const shareUrl = `${window.location.origin}/submit/${form.shareUrl}`;
+  let shareUrl = '';
+
+  if (typeof window !== 'undefined') {
+    shareUrl = `${window.location.origin}/submit/${form.shareUrl}`;
+  }
 
   if (form.published) {
     return (
       <>
-        <div className='flex flex-col items-center justify-center h-full w-full '>
+        <Confetti
+          width={window.innerWidth}
+          height={window.innerHeight}
+          recycle={false}
+          numberOfPieces={1000}
+        />
+        <div className='flex flex-col items-center justify-center h-[80vh] w-full '>
           <div className='max-w-md'>
             <h1 className='text-center text-4xl font-bol text-primary border-b pb-2 mb-10'>
               Form Published
@@ -79,6 +94,32 @@ function FormBuilder({ form }: { form: Form }) {
                 }}
               >
                 Copy link
+              </Button>
+            </div>
+            <div className='flex justify-between'>
+              <Button
+                variant={'link'}
+                asChild
+              >
+                <Link
+                  href={'/'}
+                  className='gap-2'
+                >
+                  <BsArrowLeft />
+                  Go back home
+                </Link>
+              </Button>
+              <Button
+                variant={'link'}
+                asChild
+              >
+                <Link
+                  href={`/forms/${form.id}`}
+                  className='gap-2'
+                >
+                  Form details
+                  <BsArrowRight />
+                </Link>
               </Button>
             </div>
           </div>
@@ -105,7 +146,7 @@ function FormBuilder({ form }: { form: Form }) {
             )}
           </div>
         </nav>
-        <div className='flex w-full flex-grow items-center justify-center relative overflow-y-auto g-[200px] bg-accent bg-[url(/paper.svg)] dark:bg-[url(/paper-dark.svg)]'>
+        <div className='flex w-full flex-grow items-center justify-center relative overflow-y-auto h-[200px] bg-accent bg-[url(/paper.svg)] dark:bg-[url(/paper-dark.svg)]'>
           <Designer />
         </div>
       </main>

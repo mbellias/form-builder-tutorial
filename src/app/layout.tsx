@@ -3,6 +3,7 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { Toaster } from 'sonner';
 import './globals.css';
 import DesignerContextProvider from '@/components/context/DesignerContext';
+import NextTopLoader from 'nextjs-toploader';
 
 export default function RootLayout({
   children,
@@ -16,6 +17,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <body>
+          <NextTopLoader />
           <DesignerContextProvider>
             <ThemeProvider
               attribute='class'

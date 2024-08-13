@@ -62,7 +62,7 @@ function CreateFormBtn() {
         <DialogHeader>
           <DialogTitle>Create form</DialogTitle>
           <DialogDescription>
-            Create a new form to start colecting responses
+            Create a new form to start collecting responses
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

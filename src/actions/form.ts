@@ -111,3 +111,54 @@ export async function PublishForm(id: number) {
     },
   });
 }
+
+export async function GetFormContentByUrl(formUrl: string) {
+  return await prisma.form.update({
+    select: {
+      content: true,
+    },
+    data: {
+      visits: {
+        increment: 1,
+      },
+    },
+    where: {
+      shareUrl: formUrl,
+    },
+  });
+}
+
+export async function SubmitForm(formUrl: string, content: string) {
+  return prisma.form.update({
+    data: {
+      submissions: {
+        increment: 1,
+      },
+      FormSubmissions: {
+        create: {
+          content,
+        },
+      },
+    },
+    where: {
+      shareUrl: formUrl,
+      published: true,
+    },
+  });
+}
+
+export async function GetFormWithSubmissions(id: number) {
+  const { userId, redirectToSignIn } = auth();
+
+  if (!userId) redirectToSignIn();
+
+  return await prisma.form.findUnique({
+    where: {
+      userId: userId as string,
+      id,
+    },
+    include: {
+      FormSubmissions: true,
+    },
+  });
+}

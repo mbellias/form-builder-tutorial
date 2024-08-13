@@ -10,7 +10,7 @@ import { FormElementInstance } from '../FormElements';
 
 type DesignerContextType = {
   elements: FormElementInstance[];
-  setElements: React.Dispatch<React.SetStateAction<FormElementInstance[]>>;
+  setElements: Dispatch<SetStateAction<FormElementInstance[]>>;
   addElement: (index: number, element: FormElementInstance) => void;
   removeElement: (id: string) => void;
 

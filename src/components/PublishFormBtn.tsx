@@ -12,7 +12,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { FaIcons } from 'react-icons/fa';
+import { FaSpinner } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { PublishForm } from '@/actions/form';
 import { useRouter } from 'next/navigation';
@@ -32,7 +32,7 @@ function PublishFormBtn({ id }: { id: number }) {
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger>
+      <AlertDialogTrigger asChild>
         <Button className='gap-2 text-white bg-gradient-to-r from-indigo-400 to-cyan-400'>
           <MdOutlinePublish className='h-4 w-4' />
           Publish
@@ -60,7 +60,7 @@ function PublishFormBtn({ id }: { id: number }) {
               startTransition(publishForm);
             }}
           >
-            Proceed {loading && <FaIcons className='animate-spin' />}
+            Proceed {loading && <FaSpinner className='animate-spin' />}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
