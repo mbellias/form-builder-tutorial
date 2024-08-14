@@ -1,5 +1,105 @@
 # Form Builder App
 
+PageForm is a form builder where you can drag, drop, and arrange the order of different form elements. These are the element types:
+
+```bash
+export type ElementsType =
+  | 'TextField'
+  | 'TitleField'
+  | 'SubTitleField'
+  | 'ParagraphField'
+  | 'SeparatorField'
+  | 'SpacerField'
+  | 'NumberField'
+  | 'TextareaField'
+  | 'DateField'
+  | 'SelectField'
+  | 'CheckboxField';
+```
+
+Each element type has 3 components: designer, form, and properties. The designer component is responsible for the UI of the element in the editing dashboard, the form component is responsible for the UI of the element once the form is published, and the properties component is responsible for the UI of customizing the form element. Some elements are for the layout (e.g. TitleField, SpacerField, SepatorField), and others are for the form (e.g. TextField, NumberField, DateField). 
+
+```bash
+export type FormElement = {
+  type: ElementsType;
+
+  construct: (id: string) => FormElementInstance;
+
+  designerBtnElement: {
+    icon: React.ElementType;
+    label: string;
+  };
+
+  designerComponent: React.FC<{
+    elementInstance: FormElementInstance;
+  }>;
+  formComponent: React.FC<{
+    elementInstance: FormElementInstance;
+    submitValue?: SubmitFunction;
+    isInvalid?: boolean;
+    defaultValue?: string;
+  }>;
+  propertiesComponent: React.FC<{
+    elementInstance: FormElementInstance;
+  }>;
+
+  validate: (formElement: FormElementInstance, currentValue: string) => boolean;
+};
+```
+
+The application state is managed using React's useContext hook. These are the definitions for the app's context provider:
+
+```bash
+type DesignerContextType = {
+  elements: FormElementInstance[];
+  setElements: Dispatch<SetStateAction<FormElementInstance[]>>;
+  addElement: (index: number, element: FormElementInstance) => void;
+  removeElement: (id: string) => void;
+
+  selectedElement: FormElementInstance | null;
+  setSelectedElement: Dispatch<SetStateAction<FormElementInstance | null>>;
+
+  updateElement: (id: string, element: FormElementInstance) => void;
+};
+```
+
+Once a form is a created and published, it can be shared, filled out and submitted. The main dashboard tracks visits, submissions, submission rate and bounce rate for all your forms:
+
+```bash
+export async function GetFormStats() {
+  const { userId, redirectToSignIn } = auth();
+
+  if (!userId) redirectToSignIn();
+
+  const stats = await prisma.form.aggregate({
+    where: { userId: userId as string },
+    _sum: {
+      visits: true,
+      submissions: true,
+    },
+  });
+
+  const visits = stats._sum.visits || 0;
+  const submissions = stats._sum.submissions || 0;
+
+  let submissionRate = 0;
+
+  if (visits > 0) {
+    submissionRate = (submissions / visits) * 100;
+  }
+
+  const bounceRate = 100 - submissionRate;
+
+  return {
+    visits,
+    submissions,
+    submissionRate,
+    bounceRate,
+  };
+}
+```
+
+
 ## Clerk
 
 Clerk is a Nextjs authentication provider that's simple to setup. In order for the '/sign-in' and '/sign-up' pages to work properly, go to https://clerk.com and create an account. Once you do that, create a .env file and add the following environment variables:
@@ -13,7 +113,7 @@ NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 
 ## Prisma
 
-Prisma is an Object Relational Mapping (ORM) tool that enables JSON data to be mapped and stored into SQL or NoSQL databases. In this app, prisma is configured to store data into a PostreSQL database on Vercel.
+Prisma is an Object Relational Mapping (ORM) tool that enables JSON data to be mapped and stored into SQL or NoSQL databases. In this app, prisma is configured to store data into a PostreSQL database on Vercel. The database schema can be found in the prisma directory.
 
 ## Vercel
 
@@ -38,4 +138,4 @@ Instead of creating a REST API with endpoints that trigger database operations, 
 
 ## dnd-kit
 
-
+Dnd-kit is a powerful drag and drop library.
